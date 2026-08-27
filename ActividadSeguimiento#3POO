@@ -1,0 +1,151 @@
+class Producto:
+    def __init__(self,codigo: int,nombre: str, categoria: str, precio: float, stock: int):
+        self.codigo = codigo
+        self.nombre = nombre
+        self.categoria = categoria
+        self.precio = precio
+        self.stock = stock
+        self.datos_basicos = (categoria, precio)
+
+    def obtener_categoria(self):
+        return self.datos_basicos[0]
+
+    def obtener_precio(self):
+        return self.datos_basicos[1]
+
+    def aumentar_stock(self, cantidad):
+        if cantidad > 0:
+            self.stock += cantidad
+
+    def disminuir_stock(self, cantidad):
+        if cantidad > 0 and cantidad <= self.stock:
+            self.stock -= cantidad
+
+    def mostrar_informacion(self):
+        return "Código: " + str(self.codigo) + " | Nombre: " + self.nombre + " | Categoría: " + self.categoria + " | Precio: " + str(self.obtener_precio()) + " | Stock: " + str(self.stock)
+
+class Inventario:
+    def __init__(self, nombre_tienda):
+        self.nombre_tienda = nombre_tienda
+        self.productos = []
+        self.resumen_categorias = {}
+
+    def agregar_producto(self, producto: Producto):
+        for p in self.productos:
+            if p.codigo == producto.codigo:
+                return
+        self.productos.append(producto)
+
+    def buscar_producto_por_codigo(self, codigo):
+        for producto in self.productos:
+            if producto.codigo == codigo:
+                return producto
+        return None
+    
+    def listar_productos(self):
+        lista_productos = []
+        for producto in self.productos:
+            lista_productos.append(producto.mostrar_informacion())
+        return lista_productos
+    
+    def mostrar_productos_por_categoria(self,categoria):
+        productos_categoria = []
+        for producto in self.productos:
+            if producto.obtener_categoria() == categoria:
+                productos_categoria.append(producto.mostrar_informacion())
+        return productos_categoria
+    
+    def actualizar_resumen_categorias(self):
+        self.resumen_categorias = {}
+        for producto in self.productos:
+            categoria = producto.obtener_categoria()
+            if categoria in self.resumen_categorias:
+                self.resumen_categorias[categoria] += 1
+            else:
+                self.resumen_categorias[categoria] = 1
+    def mostrar_resumen_categorias(self):
+        self.actualizar_resumen_categorias()
+        resumen = []
+        for categoria in self.resumen_categorias:
+            resumen.append("Categoría: " + categoria + str(self.resumen_categorias[categoria]))
+        return resumen
+
+inventario = Inventario("Tienda de Productos")
+opcion = ""
+while opcion != "8":
+    print("/////////////////////////////////////")
+    print("1. Agregar producto")
+    print("2. Listar productos")
+    print("3. Buscar producto por código")  
+    print("4. Mostrar productos por categoría")
+    print("5. Mostrar resumen de categorías")
+    print("6. Aumentar stock de un producto")
+    print("7. Disminuir stock de un producto")
+    print("8. Salir")
+    print("/////////////////////////////////////")
+
+    opcion = input("Seleccione una opción: ")
+    if opcion == "1":
+        codigo = int(input("Ingrese el código del producto: "))
+        nombre = input("Ingrese el nombre del producto: ")
+        categoria = input("Ingrese la categoría del producto: ")
+        precio = float(input("Ingrese el precio del producto: "))
+        stock = int(input("Ingrese el stock del producto: "))
+        producto = Producto(codigo, nombre, categoria, precio, stock)
+        inventario.agregar_producto(producto)
+        if producto in inventario.productos:
+            print("Producto agregado correctamente.")
+        else:
+            print("El producto ya existe en el inventario.")
+
+    elif opcion == "2":
+        productos = inventario.listar_productos()
+        if len(productos) == 0:
+            print("No hay productos en el inventario.")
+        else:
+            print("Productos en el inventario:")
+            for producto in productos:
+                print(producto)
+
+    elif opcion == "3":
+        codigo = int(input("Ingrese el código del producto a buscar: "))
+        producto = inventario.buscar_producto_por_codigo(codigo)
+        if producto != None:
+            print("Producto encontrado: " + producto.mostrar_informacion())
+        else:
+            print("Producto no encontrado.")
+
+    elif opcion == "4":
+        categoria = input("Ingrese la categoría de los productos a mostrar: ")
+        productos_categoria = inventario.mostrar_productos_por_categoria(categoria)
+        if len(productos_categoria) == 0:
+            print("No se encontraron productos en la categoría especificada.")
+        else:
+            print("Productos en la categoría " + categoria + ":")
+            for producto in productos_categoria:
+                print(producto)
+
+    elif opcion == "5":
+        resumen_categorias = inventario.mostrar_resumen_categorias()
+        if len(resumen_categorias) == 0:
+            print("No hay productos en el inventario.")
+        else: 
+            print("Resumen de categorías:")
+            for resumen in resumen_categorias:
+                print(resumen)
+    elif opcion == "6":
+        codigo = int(input("Ingrese el código del producto para aumentar stock: "))
+        cantidad = int(input("Ingrese la cantidad a aumentar: "))
+        producto = inventario.buscar_producto_por_codigo(codigo)
+        if producto != None:
+            producto.aumentar_stock(cantidad)
+            print("Stock aumentado correctamente. Nuevo stock: " + str(producto.stock))
+        else:
+            print("Producto no encontrado.")
+    elif opcion == "7":
+        codigo = int(input("Ingrese el código del producto para disminuir stock: "))
+        cantidad = int(input("Ingrese la cantidad a disminuir: "))
+        producto = inventario.buscar_producto_por_codigo(codigo)
+        if producto != None:
+            producto.disminuir_stock(cantidad)
+            print("Stock disminuido correctamente. Nuevo stock: " + str(producto.stock))
