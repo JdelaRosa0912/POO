@@ -1,4 +1,5 @@
 class Producto:
+
     def __init__(self,codigo: int,nombre: str, categoria: str, precio: float, stock: int):
         self.codigo = codigo
         self.nombre = nombre
@@ -67,7 +68,7 @@ class Inventario:
         self.actualizar_resumen_categorias()
         resumen = []
         for categoria in self.resumen_categorias:
-            resumen.append("Categoría: " + categoria + str(self.resumen_categorias[categoria]))
+            resumen.append("Categoría: " + categoria + " | Cantidad: " + str(self.resumen_categorias[categoria]))
         return resumen
 
 inventario = Inventario("Tienda de Productos")
